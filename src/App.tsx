@@ -48,9 +48,9 @@ const NAV = [
   { id: "generos", label: "Géneros" },
   { id: "clientes", label: "Clientes" },
   { id: "forecast", label: "Demanda" },
-  { id: "predictor", label: "Predictor IA" },
+  { id: "predictor", label: "Predictor" },
   { id: "gobernanza", label: "Gobernanza" },
-  { id: "ruta", label: "Hoja de ruta" },
+  { id: "ruta", label: "Ruta" },
 ];
 
 export default function App() {
@@ -130,35 +130,35 @@ export default function App() {
       <CustomCursor />
       {/* ---------- Nav (sticky header con sección activa) ---------- */}
       <nav className="sticky top-0 z-50 backdrop-blur bg-paper/85 border-b border-line">
-        <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl px-5 h-14 flex items-center gap-3">
           <a href="#top" className="font-display font-semibold text-lg tracking-tight shrink-0">
             Panoplia<span className="text-terracota">.</span>
           </a>
-          {/* Títulos en la cabecera, con marcado de la sección activa al hacer scroll */}
-          <div className="hidden lg:flex gap-4 text-sm text-ink-soft">
+          {/* Títulos en la cabecera (no se parten; si no caben, scroll horizontal). */}
+          <div className="hidden lg:flex flex-1 min-w-0 items-center gap-4 text-sm text-ink-soft overflow-x-auto no-scrollbar">
             {NAV.map((n) => (
               <a key={n.id} href={`#${n.id}`}
-                className={`relative py-1 transition-colors hover:text-terracota ${active === n.id ? "text-terracota font-medium" : ""}`}>
+                className={`relative py-1 shrink-0 whitespace-nowrap transition-colors hover:text-terracota ${active === n.id ? "text-terracota font-medium" : ""}`}>
                 {n.label}
                 {active === n.id && <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded bg-terracota" />}
               </a>
             ))}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto lg:ml-0">
             <button onClick={toggleTheme} aria-label="Cambiar tema"
               className="rounded-full h-9 w-9 grid place-items-center text-base border bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota transition-colors">
               {dark ? "☀" : "☾"}
             </button>
-            <button onClick={() => setBiView(true)}
-              className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border border-terracota text-terracota hover:bg-terracota hover:text-white transition-colors">
-              ▦ Power BI
+            <button onClick={() => setBiView(true)} title="Cuadro Power BI"
+              className="hidden lg:inline-flex rounded-full px-2.5 py-1.5 text-[13px] font-medium border border-terracota text-terracota hover:bg-terracota hover:text-white transition-colors whitespace-nowrap">
+              Power BI
             </button>
-            <button onClick={() => setAnexosView(true)}
-              className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border border-line text-ink-soft hover:border-terracota hover:text-terracota transition-colors">
-              {"</> Anexos"}
+            <button onClick={() => setAnexosView(true)} title="Anexos técnicos"
+              className="hidden lg:inline-flex rounded-full px-2.5 py-1.5 text-[13px] font-medium border border-line text-ink-soft hover:border-terracota hover:text-terracota transition-colors whitespace-nowrap">
+              Anexos
             </button>
-            <button onClick={() => setJuryOn((v) => !v)}
-              className={`hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border transition-colors ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota"}`}>
+            <button onClick={() => setJuryOn((v) => !v)} title="Modo defensa"
+              className={`hidden lg:inline-flex rounded-full px-2.5 py-1.5 text-[13px] font-medium border transition-colors whitespace-nowrap ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota"}`}>
               Defensa
             </button>
             <button onClick={() => setMobileOpen(true)} aria-label="Menú"
