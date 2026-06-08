@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+/* ---------- Design tokens (sistema de diseño limpio · acento turquesa INESDI) ----------
+   Nota: los tokens de acento conservan los nombres heredados (terracota/clay) por
+   compatibilidad, pero ahora representan el turquesa INESDI. */
+@theme {
+  --color-paper: #f6f9f9;        /* fondo claro cool */
+  --color-paper-soft: #e9f2f0;   /* bandas / tiles (leve tinte turquesa) */
+  --color-card: #ffffff;         /* tarjetas (antes bg-card) */
+  --color-ink: #122120;          /* tinta principal (casi negro frío) */
+  --color-ink-soft: #46514f;     /* texto secundario */
+  --color-muted: #8a9693;        /* metadatos */
+  --color-line: #dde8e5;         /* separadores */
+
+  --color-terracota: #10a99e;    /* acento principal: turquesa INESDI */
+  --color-terracota-deep: #0b6f68;
+  --color-clay: #8bd5cc;
+
+  /* semántica de recomendaciones (scoring género x mercado) */
+  --color-potenciar: #1f9d74;
+  --color-mantener: #74c3a3;
+  --color-vigilar: #e0a92b;
+  --color-reducir: #df5b4b;
+
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* ---------- Modo oscuro (overrides de tokens) ---------- */
+html.dark {
+  --color-paper: #0f1413;
+  --color-paper-soft: #18211f;
+  --color-card: #161e1c;
+  --color-ink: #eef4f2;
+  --color-ink-soft: #b3bdba;
+  --color-muted: #7e8986;
+  --color-line: #2b3633;
+  --color-terracota: #2bc4b6;
+  --color-terracota-deep: #7fe3d8;
+  --color-clay: #3f6f67;
+}
+html.dark body { background-color: var(--color-paper); }
+
+/* ---------- Lenis (smooth scroll) ---------- */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ---------- Base ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden; /* clip del full-bleed sin romper el sticky del header */
+}
+
+::selection {
+  background: var(--color-terracota);
+  color: #fff;
+}
+
+/* tipografía de titulares */
+.font-display {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+/* utilidades de scroll para la navegación por anclas */
+section[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+/* ---------- Reveal on scroll (efecto de entrada) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.22, 0.7, 0.2, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Pulso de resaltado (modo jurado): destello de fondo ---------- */
+@keyframes pulseHighlight {
+  0% { background-color: rgba(16, 169, 158, 0); }
+  22% { background-color: rgba(16, 169, 158, 0.10); }
+  100% { background-color: rgba(16, 169, 158, 0); }
+}
+.section-pulse {
+  animation: pulseHighlight 1.8s ease-out;
+  border-radius: 1.25rem;
+}
+
+/* ---------- Banner del modo jurado (entrada deslizante) ---------- */
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+.jury-banner {
+  animation: slideDownFade 0.35s ease-out;
+}
+
+/* ---------- Hero: degradado sutil animado ---------- */
+@keyframes heroDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.05); }
+}
+.hero-glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 420px;
+  background:
+    radial-gradient(40% 60% at 25% 30%, rgba(16, 169, 158, 0.16), transparent 70%),
+    radial-gradient(35% 55% at 80% 20%, rgba(139, 213, 204, 0.20), transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+  animation: heroDrift 16s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Preloader ---------- */
+@keyframes preIn { from { transform: translateY(110%); } to { transform: translateY(0); } }
+@keyframes preBar { from { width: 0; } to { width: 100%; } }
+
+/* ---------- Cursor personalizado ---------- */
+@media (pointer: fine) {
+  body.custom-cursor, body.custom-cursor * { cursor: none !important; }
+}
+.cursor-ring {
+  position: fixed; top: 0; left: 0; width: 34px; height: 34px; border: 1.5px solid var(--color-terracota);
+  border-radius: 9999px; pointer-events: none; z-index: 90; transform: translate(-50%, -50%);
+  transition: width 0.18s, height 0.18s, background-color 0.18s, border-color 0.18s; mix-blend-mode: normal;
+}
+.cursor-dot {
+  position: fixed; top: 0; left: 0; width: 6px; height: 6px; background: var(--color-terracota);
+  border-radius: 9999px; pointer-events: none; z-index: 91; transform: translate(-50%, -50%);
+}
+.cursor-ring.is-hover { width: 56px; height: 56px; background: color-mix(in srgb, var(--color-terracota) 14%, transparent); }
+
+/* oculta la barra de scroll horizontal (pills del modo jurado) */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---------- Scrollytelling (narrativa inmersiva) ---------- */
+.scrolly-scene {
+  animation: sceneIn 0.6s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+@keyframes sceneIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.scrolly-step {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.scrolly-step[data-active="false"] {
+  opacity: 0.32;
+  transform: translateY(4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scrolly-scene { animation: none; }
+  .scrolly-step { transition: none; }
+  .scrolly-step[data-active="false"] { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .section-pulse, .jury-banner, .hero-glow { animation: none; }
+  html { scroll-behavior: auto; }
+}
