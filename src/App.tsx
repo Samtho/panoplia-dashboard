@@ -12,6 +12,7 @@ import DefensePanel from "./components/DefensePanel";
 import Counter from "./components/Counter";
 import Preloader from "./components/Preloader";
 import CustomCursor from "./components/CustomCursor";
+import MobileMenu from "./components/MobileMenu";
 import { Card, Kpi, Recommendation, SectionHeader, Verdict } from "./components/ui";
 import {
   catalogReconstructionOption,
@@ -66,6 +67,7 @@ export default function App() {
   const [juryOn, setJuryOn] = useState(false);
   const [active, setActive] = useState<string>("");
   const [biView, setBiView] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [themeKey, setThemeKey] = useState(0);
   const mainRef = useRef<HTMLElement>(null);
@@ -119,7 +121,7 @@ export default function App() {
   if (biView) return <PowerBIWorkspace onExit={() => setBiView(false)} />;
 
   return (
-    <div className={`min-h-screen transition-[padding] ${juryOn ? "lg:pl-16" : ""}`}>
+    <div className={`min-h-screen transition-[padding] ${juryOn ? "pl-16" : ""}`}>
       <Preloader />
       <CustomCursor />
       {/* ---------- Nav (sticky header con sección activa) ---------- */}
@@ -144,20 +146,28 @@ export default function App() {
               {dark ? "☀" : "☾"}
             </button>
             <button onClick={() => setBiView(true)}
-              className="rounded-full px-3 py-1.5 text-sm font-medium border border-terracota text-terracota hover:bg-terracota hover:text-white transition-colors">
+              className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border border-terracota text-terracota hover:bg-terracota hover:text-white transition-colors">
               ▦ Power BI
             </button>
             <button onClick={() => setJuryOn((v) => !v)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium border transition-colors ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota"}`}>
+              className={`hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border transition-colors ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota"}`}>
               Defensa
+            </button>
+            <button onClick={() => setMobileOpen(true)} aria-label="Menú"
+              className="lg:hidden rounded-full h-9 w-9 grid place-items-center text-lg border bg-card text-ink-soft border-line">
+              ☰
             </button>
           </div>
         </div>
       </nav>
+      {mobileOpen && (
+        <MobileMenu nav={NAV} active={active} juryOn={juryOn}
+          onClose={() => setMobileOpen(false)} onPowerBI={() => setBiView(true)} onDefensa={() => setJuryOn((v) => !v)} />
+      )}
       {juryOn && <DefensePanel active={active} onClose={() => setJuryOn(false)} />}
 
       {/* ---------- Hero ---------- */}
-      <header id="top" className="relative mx-auto max-w-6xl px-5 pt-16 pb-12">
+      <header id="top" className="relative mx-auto max-w-6xl px-5 pt-16 pb-12 overflow-hidden">
         <div className="hero-glow" aria-hidden="true" />
         <p className="hero-anim text-terracota font-semibold tracking-[0.18em] uppercase text-xs mb-4">
           {meta.subtitulo}
@@ -200,7 +210,7 @@ export default function App() {
         <p className="mt-5 text-xs text-muted max-w-2xl">{meta.disclaimer}</p>
       </header>
 
-      <main key={themeKey} ref={mainRef} className="mx-auto max-w-6xl px-5 pt-12 pb-24 space-y-24">
+      <main key={themeKey} ref={mainRef} className="mx-auto max-w-6xl px-5 pt-10 pb-20 space-y-16 md:space-y-24">
         {/* ---------- 00. Diagnóstico ---------- */}
         <section id="diagnostico" className="reveal">
           <SectionHeader
