@@ -149,6 +149,9 @@ section[id] {
 }
 .cursor-ring.is-hover { width: 56px; height: 56px; background: color-mix(in srgb, var(--color-terracota) 14%, transparent); }
 
+/* resaltado de código (highlight.js): fondo transparente para encajar en el panel */
+.hljs { background: transparent !important; padding: 0 !important; }
+
 /* oculta la barra de scroll horizontal (pills del modo jurado) */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

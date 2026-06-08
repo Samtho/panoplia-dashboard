@@ -1,4 +1,7 @@
 import { useState } from "react";
+import hljs from "highlight.js/lib/core";
+import python from "highlight.js/lib/languages/python";
+import "highlight.js/styles/github-dark.css";
 import EChart from "./EChart";
 import { benchmarkOption } from "../charts/options";
 import { benchmark } from "../data/benchmark";
@@ -6,25 +9,53 @@ import { modelMetrics, modelMeta } from "../data/model";
 import { codigoPredictor, codigoBenchmark, codigoCubo } from "../data/anexos";
 import DataModelDiagram from "./DataModelDiagram";
 
+hljs.registerLanguage("python", python);
+
 const PAGES = ["Modelo de datos", "Código · Predictor", "Código · Benchmark", "Código · Análisis", "Resultados"] as const;
 
-// Bloque de código tipo editor (monoespaciado + numeración).
-function CodeBlock({ code }: { code: string }) {
-  const lines = code.replace(/\s+$/, "").split("\n");
+// Bloque de código tipo editor: cabecera de archivo, resaltado de sintaxis y numeración.
+function CodeBlock({ code, filename }: { code: string; filename: string }) {
+  const clean = code.replace(/\s+$/, "");
+  const lines = clean.split("\n");
+  const html = hljs.highlight(clean, { language: "python" }).value;
+  const [copied, setCopied] = useState(false);
+  const copy = () => { navigator.clipboard?.writeText(clean); setCopied(true); setTimeout(() => setCopied(false), 1500); };
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0b1413] overflow-hidden">
-      <div className="overflow-auto max-h-[72vh]">
-        <table className="font-mono text-[12px] leading-[1.6] w-full">
-          <tbody>
-            {lines.map((l, i) => (
-              <tr key={i}>
-                <td className="text-white/25 text-right pr-4 pl-3 select-none align-top whitespace-nowrap">{i + 1}</td>
-                <td className="text-white/85 whitespace-pre pr-4">{l || " "}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="rounded-xl border border-white/10 overflow-hidden shadow-xl">
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#0a1110] border-b border-white/10">
+        <span className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" /><span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" /><span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
+        </span>
+        <span className="text-xs text-white/70 font-mono ml-2">{filename}</span>
+        <span className="text-[10px] uppercase tracking-wide text-terracota ml-1 px-1.5 py-0.5 rounded bg-terracota/15">Python</span>
+        <span className="text-[10px] text-white/30 ml-auto hidden sm:inline">{lines.length} líneas</span>
+        <button onClick={copy} className="text-[11px] text-white/55 hover:text-white border border-white/15 rounded px-2 py-0.5 ml-2">{copied ? "✓ copiado" : "copiar"}</button>
       </div>
+      <div className="flex overflow-auto max-h-[66vh] bg-[#0b1413] text-[12.5px] leading-[1.65] font-mono">
+        <pre className="text-white/25 text-right pl-3 pr-3 py-3 select-none shrink-0">{lines.map((_, i) => i + 1).join("\n")}</pre>
+        <pre className="py-3 pr-5 whitespace-pre"><code className="hljs" dangerouslySetInnerHTML={{ __html: html }} /></pre>
+      </div>
+    </div>
+  );
+}
+
+// Página de código: resumen ("qué hace") + puntos clave + el código.
+function CodePage({ titulo, descripcion, puntos, filename, code }: {
+  titulo: string; descripcion: string; puntos: { k: string; v: string }[]; filename: string; code: string;
+}) {
+  return (
+    <div>
+      <h3 className="font-display text-xl font-semibold mb-1">{titulo}</h3>
+      <p className="text-sm text-white/60 mb-4 max-w-3xl">{descripcion}</p>
+      <div className="grid sm:grid-cols-3 gap-3 mb-5">
+        {puntos.map((p) => (
+          <div key={p.k} className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
+            <div className="text-[11px] uppercase tracking-wide text-terracota font-semibold mb-0.5">{p.k}</div>
+            <div className="text-sm text-white/75 leading-snug">{p.v}</div>
+          </div>
+        ))}
+      </div>
+      <CodeBlock code={code} filename={filename} />
     </div>
   );
 }
@@ -77,25 +108,37 @@ export default function AnexosWorkspace({ onExit }: { onExit: () => void }) {
         )}
 
         {page === 1 && (
-          <div>
-            <h3 className="font-display text-xl font-semibold mb-1">Modelo predictivo · Gradient Boosting (familia XGBoost)</h3>
-            <p className="text-sm text-white/60 mb-4">{modelMeta.objetivo} Entrenamiento, métricas, importancias y rejilla de predicción.</p>
-            <CodeBlock code={codigoPredictor} />
-          </div>
+          <CodePage
+            titulo="Modelo predictivo · Gradient Boosting (familia XGBoost)"
+            descripcion="Entrena el modelo que estima la probabilidad de éxito de un título por mercado: define el objetivo (vender ≥ 8 uds), prepara las variables, entrena, evalúa y exporta la rejilla de predicción que usa la web."
+            puntos={[
+              { k: "Algoritmo", v: "Gradient Boosting (HistGradientBoosting de scikit-learn)" },
+              { k: "Entrada", v: "Subgénero, mercado, trimestre y precio" },
+              { k: "Salida", v: "Métricas (AUC), importancias y rejilla de predicción" },
+            ]}
+            filename="04_train_model.py" code={codigoPredictor} />
         )}
         {page === 2 && (
-          <div>
-            <h3 className="font-display text-xl font-semibold mb-1">Benchmark de 11 modelos</h3>
-            <p className="text-sm text-white/60 mb-4">Comparación de todas las familias del temario sobre el mismo problema (ROC-AUC).</p>
-            <CodeBlock code={codigoBenchmark} />
-          </div>
+          <CodePage
+            titulo="Benchmark de 11 modelos"
+            descripcion="Entrena 11 algoritmos de todas las familias del temario sobre el mismo problema y los compara por ROC-AUC, para justificar con evidencia la elección del modelo final."
+            puntos={[
+              { k: "Modelos", v: "11 familias: lineal, árboles, bagging, boosting, red neuronal" },
+              { k: "Métrica", v: "ROC-AUC sobre el conjunto de test" },
+              { k: "Ganador", v: "Gradient Boosting (0,645); ninguna otra familia lo supera" },
+            ]}
+            filename="05_benchmark_modelos.py" code={codigoBenchmark} />
         )}
         {page === 3 && (
-          <div>
-            <h3 className="font-display text-xl font-semibold mb-1">Análisis: series, matriz scoring y long tail</h3>
-            <p className="text-sm text-white/60 mb-4">Cálculo de la serie mensual, los 108 scores género×mercado y la curva de concentración.</p>
-            <CodeBlock code={codigoCubo} />
-          </div>
+          <CodePage
+            titulo="Análisis: series, matriz de scoring y long tail"
+            descripcion="Calcula desde el dataset los insumos del cuadro de mando: la serie de ventas mensual, los 108 scores de la matriz género × mercado y la curva de concentración (long tail)."
+            puntos={[
+              { k: "Serie temporal", v: "63 meses (2021 a inicios de 2026)" },
+              { k: "Matriz", v: "108 scores género × mercado, fórmula multi-criterio" },
+              { k: "Long tail", v: "curva de concentración del catálogo" },
+            ]}
+            filename="02_calculo_web.py" code={codigoCubo} />
         )}
         {page === 4 && (
           <div>
