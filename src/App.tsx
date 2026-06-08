@@ -7,6 +7,7 @@ import LaunchSimulator from "./components/LaunchSimulator";
 import ScenarioSimulator from "./components/ScenarioSimulator";
 import BestsellerShowcase from "./components/BestsellerShowcase";
 import PowerBIWorkspace from "./components/PowerBIWorkspace";
+import AnexosWorkspace from "./components/AnexosWorkspace";
 import FlatMap from "./components/FlatMap";
 import DefensePanel from "./components/DefensePanel";
 import Counter from "./components/Counter";
@@ -68,6 +69,7 @@ export default function App() {
   const [juryOn, setJuryOn] = useState(false);
   const [active, setActive] = useState<string>("");
   const [biView, setBiView] = useState(false);
+  const [anexosView, setAnexosView] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [themeKey, setThemeKey] = useState(0);
@@ -118,8 +120,9 @@ export default function App() {
     return () => io.disconnect();
   }, [themeKey]);
 
-  // Vista Power BI: experiencia independiente (no es la presentación).
+  // Vistas independientes (no son la presentación).
   if (biView) return <PowerBIWorkspace onExit={() => setBiView(false)} />;
+  if (anexosView) return <AnexosWorkspace onExit={() => setAnexosView(false)} />;
 
   return (
     <div className={`min-h-screen transition-[padding] ${juryOn ? "pl-16" : ""}`}>
@@ -150,6 +153,10 @@ export default function App() {
               className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border border-terracota text-terracota hover:bg-terracota hover:text-white transition-colors">
               ▦ Power BI
             </button>
+            <button onClick={() => setAnexosView(true)}
+              className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border border-line text-ink-soft hover:border-terracota hover:text-terracota transition-colors">
+              {"</> Anexos"}
+            </button>
             <button onClick={() => setJuryOn((v) => !v)}
               className={`hidden lg:inline-flex rounded-full px-3 py-1.5 text-sm font-medium border transition-colors ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line hover:border-terracota hover:text-terracota"}`}>
               Defensa
@@ -163,7 +170,7 @@ export default function App() {
       </nav>
       {mobileOpen && (
         <MobileMenu nav={NAV} active={active} juryOn={juryOn}
-          onClose={() => setMobileOpen(false)} onPowerBI={() => setBiView(true)} onDefensa={() => setJuryOn((v) => !v)} />
+          onClose={() => setMobileOpen(false)} onPowerBI={() => setBiView(true)} onAnexos={() => setAnexosView(true)} onDefensa={() => setJuryOn((v) => !v)} />
       )}
       {juryOn && <DefensePanel active={active} onClose={() => setJuryOn(false)} />}
 

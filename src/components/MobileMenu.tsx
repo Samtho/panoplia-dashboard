@@ -3,13 +3,14 @@ import { scrollToId } from "../lib/motion";
 
 // Menú móvil a pantalla completa (solo < lg). Navegación por secciones + acciones.
 export default function MobileMenu({
-  nav, active, juryOn, onClose, onPowerBI, onDefensa,
+  nav, active, juryOn, onClose, onPowerBI, onAnexos, onDefensa,
 }: {
   nav: { id: string; label: string }[];
   active: string;
   juryOn: boolean;
   onClose: () => void;
   onPowerBI: () => void;
+  onAnexos: () => void;
   onDefensa: () => void;
 }) {
   useEffect(() => {
@@ -38,6 +39,8 @@ export default function MobileMenu({
         <div className="py-5 flex flex-wrap gap-3 shrink-0 border-t border-line">
           <button onClick={() => { onClose(); onPowerBI(); }}
             className="rounded-full px-4 py-2 text-sm font-medium bg-terracota text-white">▦ Cuadro Power BI</button>
+          <button onClick={() => { onClose(); onAnexos(); }}
+            className="rounded-full px-4 py-2 text-sm font-medium border bg-card text-ink-soft border-line">{"</> Anexos"}</button>
           <button onClick={() => { onClose(); onDefensa(); }}
             className={`rounded-full px-4 py-2 text-sm font-medium border ${juryOn ? "bg-terracota text-white border-terracota" : "bg-card text-ink-soft border-line"}`}>
             {juryOn ? "● Defensa activa" : "Modo defensa"}
