@@ -4,6 +4,7 @@ import { benchmarkOption } from "../charts/options";
 import { benchmark } from "../data/benchmark";
 import { modelMetrics, modelMeta } from "../data/model";
 import { codigoPredictor, codigoBenchmark, codigoCubo } from "../data/anexos";
+import DataModelDiagram from "./DataModelDiagram";
 
 const PAGES = ["Modelo de datos", "Código · Predictor", "Código · Benchmark", "Código · Análisis", "Resultados"] as const;
 
@@ -24,20 +25,6 @@ function CodeBlock({ code }: { code: string }) {
           </tbody>
         </table>
       </div>
-    </div>
-  );
-}
-
-// Tabla de entidad del modelo de datos.
-function Entidad({ nombre, campos, fact }: { nombre: string; campos: string[]; fact?: boolean }) {
-  return (
-    <div className={`rounded-lg border ${fact ? "border-terracota/60 bg-terracota/10" : "border-white/10 bg-white/5"} overflow-hidden`}>
-      <div className={`px-3 py-1.5 text-sm font-semibold ${fact ? "text-terracota" : "text-white"} border-b border-white/10`}>
-        {fact ? "▣ " : "▢ "}{nombre}
-      </div>
-      <ul className="px-3 py-2 text-xs text-white/60 space-y-0.5">
-        {campos.map((c) => <li key={c} className="whitespace-nowrap">{c}</li>)}
-      </ul>
     </div>
   );
 }
@@ -71,16 +58,16 @@ export default function AnexosWorkspace({ onExit }: { onExit: () => void }) {
         {page === 0 && (
           <div>
             <h3 className="font-display text-xl font-semibold mb-1">Modelo de datos relacional (PostgreSQL · estrella)</h3>
-            <p className="text-sm text-white/60 mb-5">Tabla de hechos central (líneas de facturación) rodeada de dimensiones. Reconstruido y normalizado desde 10 hojas Excel originales.</p>
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <Entidad nombre="dataset_v3 (hechos)" fact campos={["id_libro, id_subgenero, ean", "codigo_cliente, iso_pais", "serie_numero, fecha", "uds_servidas, importe_neto", "precio_costo, porc_dto, pvp"]} />
-              <Entidad nombre="DimClientes" campos={["codigo_cliente (PK)", "iso_pais, localidad", "forma_pago, regimen_iva"]} />
-              <Entidad nombre="DimLibros" campos={["id_libro (PK), ean", "id_genero, id_subgenero"]} />
-              <Entidad nombre="DimFecha" campos={["fecha (PK)", "año, mes, trimestre", "día_semana"]} />
-              <Entidad nombre="catalogo_genero / subgenero" campos={["id_genero, genero", "id_subgenero, subgenero"]} />
-              <Entidad nombre="DimEditoriales / Proveedores / Nombres" campos={["id_editorial", "id_proveedor", "ean → título"]} />
+            <p className="text-sm text-white/60 mb-2">
+              Una tabla de <b className="text-white">hechos</b> en el centro (cada línea de factura) rodeada de tablas de <b className="text-white">dimensión</b> que la describen (cliente, libro, fecha, género…). Reconstruido y normalizado desde 10 hojas de Excel originales.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-6 text-xs text-white/50">
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-terracota" /> Tabla de hechos</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-white/40" /> Dimensión</span>
+              <span>PK = clave primaria · las líneas turquesa son las relaciones</span>
             </div>
-            <h4 className="font-display font-semibold mb-2">Métricas DAX (Power BI)</h4>
+            <DataModelDiagram />
+            <h4 className="font-display font-semibold mb-2 mt-8">Métricas DAX (Power BI)</h4>
             <div className="flex flex-wrap gap-2">
               {["Ventas Netas", "Variación YoY", "Ventas YTD", "Margen %", "Descuento Medio %", "Ticket Medio", "Uds por Factura", "RFM (R/F/M)", "% Export", "Score género×mercado"].map((m) => (
                 <span key={m} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70">{m}</span>
