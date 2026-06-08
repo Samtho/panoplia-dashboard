@@ -48,6 +48,7 @@ const NAV = [
   { id: "clientes", label: "Clientes" },
   { id: "forecast", label: "Demanda" },
   { id: "predictor", label: "Predictor IA" },
+  { id: "gobernanza", label: "Gobernanza" },
   { id: "ruta", label: "Hoja de ruta" },
 ];
 
@@ -487,10 +488,59 @@ export default function App() {
           <LaunchSimulator />
         </section>
 
-        {/* ---------- 7. Hoja de ruta ---------- */}
+        {/* ---------- 7. Gobernanza del dato ---------- */}
+        <section id="gobernanza" className="reveal">
+          <SectionHeader
+            kicker="07 · ¿Se puede confiar en el dato?"
+            question="El dato a oscuras: el problema que sostiene a todos los demás."
+            lead="Antes de cualquier análisis está la calidad del dato. El histórico de Panoplia tenía huecos serios: sin resolverlos, ni el margen ni las decisiones son del todo fiables. Esto es lo que encontramos y el marco de gobernanza que proponemos."
+          />
+          {/* Salud del dato (diagnóstico real) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {[
+              { v: "75%", l: "de las líneas SIN coste registrado", tone: "text-reducir", d: "El mayor agujero: sin coste no hay margen real." },
+              { v: "Excel", l: "donde se gestionaba el catálogo", tone: "text-vigilar", d: "Sin base de datos ni modelo relacional." },
+              { v: "99.985", l: "títulos reconstruidos desde facturas", tone: "text-ink", d: "No existía un catálogo de referencia completo." },
+              { v: "0,81%", l: "tasa de devolución (bien registrada)", tone: "text-potenciar", d: "Lo que sí está, está limpio." },
+            ].map((s) => (
+              <div key={s.l} className="rounded-xl border border-line bg-card p-4">
+                <div className={`font-display text-2xl font-semibold ${s.tone}`}>{s.v}</div>
+                <div className="text-xs font-medium text-ink mt-1">{s.l}</div>
+                <div className="text-xs text-muted mt-1 leading-snug">{s.d}</div>
+              </div>
+            ))}
+          </div>
+          {/* Marco de gobernanza propuesto */}
+          <Card>
+            <h3 className="font-display text-lg font-semibold mb-1">El marco de gobernanza propuesto</h3>
+            <p className="text-sm text-ink-soft mb-4">Cinco pilares para que Panoplia institucionalice el dato sin inversión externa.</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { t: "1 · Calidad del dato", d: "Registrar el coste en cada línea de factura (KPI: % de líneas con coste, objetivo 100%) y validar las entradas. Es la palanca nº1: desbloquea el margen real." },
+                { t: "2 · Un modelo único", d: "Migrar el catálogo de Excel a PostgreSQL con modelo en estrella: una sola fuente de verdad, consultable y escalable." },
+                { t: "3 · Responsable del dato", d: "Designar un data owner y mantener un diccionario de datos: quién define, quién corrige, qué significa cada campo." },
+                { t: "4 · Reproducibilidad", d: "Todo el pipeline documentado en notebooks: Panoplia puede repetir el análisis con datos nuevos sin depender del equipo académico." },
+                { t: "5 · Indicadores de salud", d: "Un panel de salud del dato (cobertura de coste, devoluciones, ventas pendientes, huecos) revisado de forma periódica." },
+                { t: "→ Hacia la nube", d: "Con el dato gobernado, el paso natural es la arquitectura cloud (Azure) de la hoja de ruta: institucionalizar la solución." },
+              ].map((p) => (
+                <div key={p.t} className="rounded-xl border border-line bg-paper-soft p-4">
+                  <div className="font-display font-semibold text-terracota mb-1">{p.t}</div>
+                  <div className="text-sm text-ink-soft leading-snug">{p.d}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <div className="mt-6">
+            <Verdict tone="alerta">
+              El 75% de líneas sin coste es la deuda técnica que limita todo lo demás: cerrarla es el primer paso de los "0 a 90 días" de la hoja de ruta.
+            </Verdict>
+          </div>
+        </section>
+
+        {/* ---------- 8. Hoja de ruta ---------- */}
         <section id="ruta" className="reveal">
           <SectionHeader
-            kicker="07 · ¿Qué hacer ahora?"
+            kicker="08 · ¿Qué hacer ahora?"
             question="Una hoja de ruta accionable a tres horizontes."
           />
           <div className="grid md:grid-cols-3 gap-5">
